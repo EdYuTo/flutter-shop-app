@@ -38,22 +38,12 @@ class ProductsProvider with ChangeNotifier {
     ),
   ];
 
-  var _showFavoritesOnly = false;
-
-  void showFavoritesOnly() {
-    _showFavoritesOnly = true;
-    notifyListeners();
-  }
-
-  void showAll() {
-    _showFavoritesOnly = false;
-    notifyListeners();
-  }
-
   List<Product> get items {
-    return _showFavoritesOnly
-        ? _items.where((item) => item.isFavorite).toList()
-        : [..._items];
+    return [..._items];
+  }
+
+  List<Product> get favoriteItems {
+    return _items.where((item) => item.isFavorite).toList();
   }
 
   Product findById(String id) {
