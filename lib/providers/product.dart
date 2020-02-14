@@ -17,8 +17,30 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
+  static Product fromMap(Map<String, Object> productMap) {
+    return Product(
+      id: productMap['id'],
+      title: productMap['title'],
+      description: productMap['description'],
+      price: productMap['price'],
+      imageUrl: productMap['imageUrl'],
+      isFavorite: productMap['isFavorite'],
+    );
+  }
+
   void toggleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
+  }
+
+  Map<String, Object> toMap() {
+    return {
+      'id': this.id,
+      'title': this.title,
+      'description': this.description,
+      'price': this.price,
+      'imageUrl': this.imageUrl,
+      'isFavorite': this.isFavorite,
+    };
   }
 }
