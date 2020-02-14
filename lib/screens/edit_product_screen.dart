@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/providers/products_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product-screen';
@@ -48,7 +51,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    _form.currentState.save();
+    final isValid = _form.currentState.validate();
+    if (isValid) {
+      _form.currentState.save();
+      Provider.of<ProductsProvider>(context, listen: false).addProduct(_editedProduct);
+      Navigator.of(context).pop();
+    }
+    return;
   }
 
   @override
@@ -75,9 +84,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
                 },
+                validator: (title) {
+                  if (title.isEmpty || title == null) return 'Please enter a title';
+                  return null;
+                },
                 onSaved: (title) {
                   _editedProduct = Product(
-                    id: _editedProduct.id,
+                    id: Uuid().v4(),
                     title: title,
                     price: _editedProduct.price,
                     description: _editedProduct.description,
@@ -92,6 +105,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 keyboardType: TextInputType.number,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                },
+                validator: (price) {
+                  if (price.isEmpty || price == null) return 'Please enter a value';
+                  else if (double.tryParse(price)==null) return 'Please enter a valid number';
+                  else if (double.parse(price) <= 0) return 'Please enter a positive and non zero value';
+                  return null;
                 },
                 onSaved: (price) {
                   _editedProduct = Product(
@@ -149,6 +168,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _saveForm(),
+                      validator: (imageUrl) {
+                        if (!imageUrl.startsWith('http') && !imageUrl.startsWith('https')) return 'Please enter a valid url';
+                        return null;
+                      },
                       onSaved: (imageUrl) {
                         _editedProduct = Product(
                           id: _editedProduct.id,
