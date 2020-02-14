@@ -53,10 +53,10 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((product) => product.id == id);
   }
 
-  Future<void> addProduct(Product product) {
-    const url = 'https://shop-app-77ef6.firebaseio.com/products.json';
-    print(product.toMap());
-    return http.post(url, body: jsonEncode(product.toMap())).then((response) {
+  Future<void> addProduct(Product product) async {
+    const url = 'https://shop-app-77ef6.firebaseio.com/products';
+    try {
+      final response = await http.post(url, body: jsonEncode(product.toMap()));
       _items.add(Product(
         id: json.decode(response.body).toString(),
         title: product.title,
@@ -66,7 +66,22 @@ class ProductsProvider with ChangeNotifier {
         isFavorite: product.isFavorite,
       ));
       notifyListeners();
-    });
+    } catch (error) {
+      print(error);
+      throw (error);
+    }
+    // ignoring the try catch also works, because we handle the error
+    // with catchError when calling addProduct on edit_product_screen
+//    final response = await http.post(url, body: jsonEncode(product.toMap()));
+//      _items.add(Product(
+//        id: json.decode(response.body).toString(),
+//        title: product.title,
+//        description: product.description,
+//        price: product.price,
+//        imageUrl: product.imageUrl,
+//        isFavorite: product.isFavorite,
+//      ));
+//    notifyListeners();
   }
 
   void updateProduct(String id, Product newProduct) {
