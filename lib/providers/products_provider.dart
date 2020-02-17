@@ -27,7 +27,7 @@ class ProductsProvider with ChangeNotifier {
       final response = await http.post(_url, body: jsonEncode(product.toMap()));
       //_items.add(product);
       _items.add(Product(
-        id: json.decode(response.body).toString(),
+        id: json.decode(response.body)['name'],
         title: product.title,
         description: product.description,
         price: product.price,
