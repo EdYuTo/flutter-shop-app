@@ -38,6 +38,7 @@ class ProductsProvider with ChangeNotifier {
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl,
+        creatorId: userId,
       ));
       notifyListeners();
     } catch (error) {
