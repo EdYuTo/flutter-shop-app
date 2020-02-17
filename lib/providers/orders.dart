@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:shop_app/providers/cart.dart';
-import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/providers/cart.dart';
 
 class OrderItem {
   final String id;
@@ -20,9 +19,14 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  static const _url = 'https://shop-app-77ef6.firebaseio.com/orders.json';
+  final String authToken;
+  List<OrderItem> _orders;
 
-  List<OrderItem> _orders = [];
+  String _url;
+
+  Orders(this.authToken, this._orders) {
+    _url = 'https://shop-app-77ef6.firebaseio.com/orders.json?auth=$authToken';
+  }
 
   List<OrderItem> get orders {
     return _orders;
@@ -59,22 +63,23 @@ class Orders with ChangeNotifier {
     final response = await http.get(_url);
     final List<OrderItem> loadedOrders = [];
     final data = json.decode(response.body) as Map<String, dynamic>;
-    if (data == null)
-      return;
+    if (data == null) return;
     data.forEach((id, order) {
       loadedOrders.add(
         OrderItem(
           id: id,
           amount: order['amount'],
-          products: (order['products'] as List<dynamic>).map(
-            (item) => CartItem(
-              id: item['id'],
-              productId: item['productId'],
-              title: item['title'],
-              price: item['price'],
-              quantity: item['quantity'],
-            ),
-          ).toList(),
+          products: (order['products'] as List<dynamic>)
+              .map(
+                (item) => CartItem(
+                  id: item['id'],
+                  productId: item['productId'],
+                  title: item['title'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                ),
+              )
+              .toList(),
           dateTime: DateTime.parse(order['dateTime']),
         ),
       );

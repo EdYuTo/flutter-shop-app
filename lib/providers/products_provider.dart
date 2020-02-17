@@ -6,9 +6,13 @@ import 'package:shop_app/providers/product.dart';
 import 'package:http/http.dart' as http;
 
 class ProductsProvider with ChangeNotifier {
-  static const _url = 'https://shop-app-77ef6.firebaseio.com/products.json';
+  final String authToken;
+  List<Product> _items;
+  String _url;
 
-  List<Product> _items = [];
+ ProductsProvider(this.authToken, this._items) {
+  _url ='https://shop-app-77ef6.firebaseio.com/products.json?auth=$authToken';
+ }
 
   List<Product> get items {
     return [..._items];
@@ -41,7 +45,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> updateProduct(String id, Product newProduct) async {
-    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json';
+    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
     final productIdx = _items.indexWhere((product) => product.id == id);
     if (productIdx >= 0) {
       try {
@@ -55,7 +59,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json';
+    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     var existingProduct = _items[existingProductIndex];
