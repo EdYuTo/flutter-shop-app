@@ -45,7 +45,7 @@ class ProductsProvider with ChangeNotifier {
     final productIdx = _items.indexWhere((product) => product.id == id);
     if (productIdx >= 0) {
       try {
-        await http.patch(url, body: jsonEncode(newProduct.toMap()));
+        await http.patch(url, body: json.encode(newProduct.toMap()));
       } catch (error) {
         throw (error);
       }

@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Product with ChangeNotifier {
   final String id;
@@ -28,9 +32,26 @@ class Product with ChangeNotifier {
     );
   }
 
-  void toggleFavorite() {
+  void toggleFavorite() async {
+    final oldFavStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json';
+    try {
+      final response = await http.patch(
+        url,
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }),
+      );
+      if (response.statusCode >= 400) {
+        isFavorite = oldFavStatus;
+        notifyListeners();
+      }
+    } catch (error) {
+      isFavorite = oldFavStatus;
+      notifyListeners();
+    }
   }
 
   Map<String, Object> toMap() {
