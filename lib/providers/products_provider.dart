@@ -39,9 +39,17 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  void updateProduct(String id, Product newProduct) async {
+    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json';
     final productIdx = _items.indexWhere((product) => product.id == id);
-    if (productIdx >= 0) _items[productIdx] = newProduct;
+    if (productIdx >= 0) {
+      try {
+        await http.patch(url, body: jsonEncode(newProduct.toMap()));
+      } catch (error) {
+        throw (error);
+      }
+      _items[productIdx] = newProduct;
+    }
     notifyListeners();
   }
 
