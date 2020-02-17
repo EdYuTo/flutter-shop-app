@@ -34,6 +34,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProxyProvider<Auth, ProductsProvider>(
           builder: (ctx, auth, previousProductsProvider) => ProductsProvider(
               auth.token,
+              auth.userId,
               previousProductsProvider == null
                   ? []
                   : previousProductsProvider.items),

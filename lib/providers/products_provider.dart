@@ -1,18 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
-import 'package:http/http.dart' as http;
 
 class ProductsProvider with ChangeNotifier {
   final String authToken;
+  final String userId;
   List<Product> _items;
   String _url;
 
- ProductsProvider(this.authToken, this._items) {
-  _url ='https://shop-app-77ef6.firebaseio.com/products.json?auth=$authToken';
- }
+  ProductsProvider(this.authToken, this.userId, this._items) {
+    _url =
+        'https://shop-app-77ef6.firebaseio.com/products.json?auth=$authToken';
+  }
 
   List<Product> get items {
     return [..._items];
@@ -36,7 +38,6 @@ class ProductsProvider with ChangeNotifier {
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl,
-        isFavorite: product.isFavorite,
       ));
       notifyListeners();
     } catch (error) {
@@ -45,7 +46,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> updateProduct(String id, Product newProduct) async {
-    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
+    final url =
+        'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
     final productIdx = _items.indexWhere((product) => product.id == id);
     if (productIdx >= 0) {
       try {
@@ -59,7 +61,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = 'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
+    final url =
+        'https://shop-app-77ef6.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex =
         _items.indexWhere((product) => product.id == id);
     var existingProduct = _items[existingProductIndex];
@@ -79,8 +82,14 @@ class ProductsProvider with ChangeNotifier {
       final response = await http.get(_url);
       final data = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> newItems = [];
-      if (data == null)
-        return;
+      if (data == null) return;
+
+      final favoriteUrl =
+          'https://shop-app-77ef6.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+
+      final isFavoriteResponse = await http.get(favoriteUrl);
+      final isFavoriteData = json.decode(isFavoriteResponse.body);
+
       data.forEach((id, product) {
         newItems.add(Product(
           id: id,
@@ -88,7 +97,8 @@ class ProductsProvider with ChangeNotifier {
           description: product['description'],
           price: product['price'],
           imageUrl: product['imageUrl'],
-          isFavorite: product['isFavorite'],
+          isFavorite:
+              isFavoriteData == null ? false : isFavoriteData[id] ?? false,
         ));
       });
       _items = newItems;
