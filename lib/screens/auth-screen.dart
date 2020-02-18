@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/auth.dart';
-import 'package:shop_app/screens/products_overview_screen.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -140,13 +139,11 @@ class _AuthCardState extends State<AuthCard> {
           _authData['email'],
           _authData['password'],
         );
-        Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
       } else {
         await Provider.of<Auth>(context, listen: false).signUp(
           _authData['email'],
           _authData['password'],
         );
-        Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
       }
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failure.';

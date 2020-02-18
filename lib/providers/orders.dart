@@ -20,12 +20,14 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   final String authToken;
+  final String userId;
   List<OrderItem> _orders;
 
   String _url;
 
-  Orders(this.authToken, this._orders) {
-    _url = 'https://shop-app-77ef6.firebaseio.com/orders.json?auth=$authToken';
+  Orders(this.authToken, this.userId, this._orders) {
+    _url =
+        'https://shop-app-77ef6.firebaseio.com/orders/$userId.json?auth=$authToken';
   }
 
   List<OrderItem> get orders {
