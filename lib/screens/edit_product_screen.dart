@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/providers/products_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -22,6 +23,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   var _isLoading = false;
   var _addingId;
   var _productInitialized = false;
+  String _creatorId = null;
 
   var _editedProduct = Product(
     id: null,
@@ -30,12 +32,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     description: '',
     imageUrl: '',
     isFavorite: false,
+    creatorId: null,
   );
 
   @override
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImageUrl);
+    _creatorId = Provider.of<Auth>(context, listen: false).userId;
   }
 
   @override
@@ -159,6 +163,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _editedProduct.description,
                           imageUrl: _editedProduct.imageUrl,
                           isFavorite: _editedProduct.isFavorite,
+                          creatorId: _creatorId,
                         );
                       },
                     ),
@@ -189,6 +194,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _editedProduct.description,
                           imageUrl: _editedProduct.imageUrl,
                           isFavorite: _editedProduct.isFavorite,
+                          creatorId: _creatorId,
                         );
                       },
                     ),
@@ -207,6 +213,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: description,
                           imageUrl: _editedProduct.imageUrl,
                           isFavorite: _editedProduct.isFavorite,
+                          creatorId: _creatorId,
                         );
                       },
                     ),
@@ -254,6 +261,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 description: _editedProduct.description,
                                 imageUrl: imageUrl,
                                 isFavorite: _editedProduct.isFavorite,
+                                creatorId: _creatorId,
                               );
                             },
                           ),

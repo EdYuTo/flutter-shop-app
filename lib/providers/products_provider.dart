@@ -78,9 +78,12 @@ class ProductsProvider with ChangeNotifier {
     existingProduct = null;
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts([bool filterByUser = false]) async {
     try {
-      final response = await http.get(_url);
+      final url = filterByUser
+          ? 'https://shop-app-77ef6.firebaseio.com/products.json?auth=$authToken&orderBy="creatorId"&equalTo="$userId"'
+          : _url;
+      final response = await http.get(url);
       final data = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> newItems = [];
       if (data == null) return;
@@ -100,6 +103,7 @@ class ProductsProvider with ChangeNotifier {
           imageUrl: product['imageUrl'],
           isFavorite:
               isFavoriteData == null ? false : isFavoriteData[id] ?? false,
+          creatorId: product['creatorId'],
         ));
       });
       _items = newItems;

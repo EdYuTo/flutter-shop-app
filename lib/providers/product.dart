@@ -66,6 +66,7 @@ class Product with ChangeNotifier {
       'price': this.price,
       'imageUrl': this.imageUrl,
       'isFavorite': this.isFavorite,
+      'creatorId': this.creatorId,
     };
   }
 }
